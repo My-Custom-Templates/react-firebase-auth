@@ -75,7 +75,6 @@ export default function SignUp() {
 					/>
 				</div>
 				<Button
-					className="bg-blue-400 py-2 px-2 rounded-md mt-2 text-white"
 					onClick={handleSubmit}
 					disabled={loading}
 				>

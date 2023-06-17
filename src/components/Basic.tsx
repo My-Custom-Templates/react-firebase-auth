@@ -9,8 +9,8 @@ const Input = ({
 );
 
 // prettier-ignore
-const Button = ({ children, onClick, ...attributes }: {children: React.ReactNode, onClick: () => void}) => (
-	<button className="bg-blue-400 py-2 px-2 rounded-md mt-2 text-white" onClick={onClick} {...attributes}>{children}</button>
+const Button = ({ children, onClick, disabled = false, ...attributes }: {children: React.ReactNode, onClick: () => void, disabled?: boolean}) => (
+	<button className="bg-blue-400 py-2 px-2 rounded-md mt-2 text-white" onClick={onClick} disabled={disabled} {...attributes}>{children}</button>
 );
 
 export { Input, Label, Button };
