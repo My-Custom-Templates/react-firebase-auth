@@ -2,6 +2,7 @@ import { User } from "firebase/auth";
 import { Button } from "../components/Basic";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Dashboard() {
 	const { logout, currentUser } = useAuth() as {
@@ -18,6 +19,12 @@ export default function Dashboard() {
 			console.log(err);
 		}
 	}
+
+	useEffect(() => {
+		if (!currentUser) {
+			navigate("/login");
+		}
+	});
 
 	return (
 		<div>
