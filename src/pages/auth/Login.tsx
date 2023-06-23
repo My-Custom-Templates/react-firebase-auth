@@ -4,8 +4,8 @@ import { UserCredential } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import toast from "react-hot-toast";
 
-import { useAuth } from "../contexts";
-import { Input, Label } from "../components";
+import { useAuth } from "../../contexts";
+import { Input, Label } from "../../components";
 
 function reducer(
 	state: { email: string; password: string },
@@ -32,22 +32,29 @@ export default function Login() {
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
 
-	async function handleSubmit() {
-		try {
-			setLoading(true);
-			await login(state.email, state.password);
-			navigate("/");
-		} catch (error) {
-			if (error instanceof FirebaseError) {
-				toast.error((error as FirebaseError).code);
-				setLoading(false);
-			}
-		}
+	function handleSubmit() {
+		setLoading(true);
+		toast.promise(login(state.email, state.password), {
+			loading: "Loading",
+			success: () => {
+				setTimeout(() => null, 1000);
+				return "Logged in";
+			},
+			error: (error) => {
+				if (error instanceof FirebaseError) {
+					setLoading(false);
+					return (error as FirebaseError).code;
+				}
+				return "Unknown error";
+			},
+		});
+		setLoading(false);
+		navigate("/");
 	}
 
 	return (
-		<div className="w-full h-screen flex flex-col gap-y-4 justify-center items-center">
-			<div className="flex flex-col gap-y-2 max-w-xs p-4 rounded-xl bg-slate-200">
+		<div className="w-full h-screen flex flex-col gap-y-6 justify-center items-center">
+			<div className="flex flex-col gap-y-2 w-full max-w-xs p-4 rounded-xl bg-slate-200">
 				<div>
 					<Label>Email</Label>
 					<Input
@@ -75,12 +82,14 @@ export default function Login() {
 					Login
 				</button>
 			</div>
-			<div className="flex flex-col items-center">
+			<div className="flex flex-col items-center text-red-500 font-semibold">
 				<Link to="/forgot-password">Forgot your password ?</Link>
 			</div>
 			<div className="flex flex-col items-center">
 				<div>Need an account ?</div>
-				<Link to="/signup">Sign Up</Link>
+				<Link to="/signup" className="text-green-500 font-semibold">
+					Sign Up
+				</Link>
 			</div>
 		</div>
 	);

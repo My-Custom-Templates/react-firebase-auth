@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
 import toast from "react-hot-toast";
 
-import { useAuth } from "../contexts";
-import { Input, Label } from "../components";
+import { useAuth } from "../../contexts";
+import { Input, Label } from "../../components";
 
 function reducer(
 	state: { email: string },
@@ -29,17 +29,23 @@ export default function ForgotPassword() {
 	};
 	const [loading, setLoading] = useState(false);
 
-	async function handleSubmit() {
-		try {
-			setLoading(true);
-			await resetPassword(state.email);
-			toast.success("Check your inbox");
-		} catch (error) {
-			if (error instanceof FirebaseError) {
-				toast.error((error as FirebaseError).code);
-				setLoading(false);
-			}
-		}
+	function handleSubmit() {
+		setLoading(true);
+		toast.promise(resetPassword(state.email), {
+			loading: "Loading",
+			success: () => {
+				setTimeout(() => null, 1000);
+				return "Check your inbox";
+			},
+			error: (error) => {
+				if (error instanceof FirebaseError) {
+					setLoading(false);
+					return (error as FirebaseError).code;
+				}
+				return "Unknown error";
+			},
+		});
+		setLoading(false);
 	}
 
 	return (

@@ -1,10 +1,11 @@
 import { useReducer, useState } from "react";
-import { Link } from "react-router-dom";
-import { User } from "firebase/auth";
+import { Link, useNavigate } from "react-router-dom";
+import { UserCredential } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
 import toast from "react-hot-toast";
 
-import { useAuth } from "../contexts";
-import { Button, Input, Label } from "../components";
+import { useAuth } from "../../contexts";
+import { Button, Input, Label } from "../../components";
 
 function reducer(
 	state: { email: string; password: string; confirmPassword: string },
@@ -20,39 +21,37 @@ function reducer(
 	}
 }
 
-export default function UpdateProfile() {
-	const { currentUser, updateUserEmail, updateUserPassword } = useAuth() as {
-		currentUser: User | null | undefined;
-		updateUserEmail: (email: string) => Promise<void> | undefined;
-		updateUserPassword: (email: string) => Promise<void> | undefined;
-	};
+export default function SignUp() {
 	const [state, dispatch] = useReducer(reducer, {
-		email: currentUser?.email ?? "",
+		email: "",
 		password: "",
 		confirmPassword: "",
 	});
+	const { signup } = useAuth() as {
+		signup: (email: string, password: string) => Promise<UserCredential>;
+	};
 	const [loading, setLoading] = useState(false);
+	const navigate = useNavigate();
 
 	function handleSubmit() {
 		if (state.password === state.confirmPassword) {
 			setLoading(true);
-			const promises: (Promise<void> | undefined)[] = [];
-
-			if (currentUser?.email !== state.email) {
-				promises.push(updateUserEmail(state.email));
-			}
-			if (state.password.length >= 6) {
-				promises.push(updateUserPassword(state.password));
-			}
-
-			Promise.all(promises)
-				.then(() => {
-					toast.success("Profile Updated");
-					dispatch({ type: "password", value: "" });
-					dispatch({ type: "confirmPassword", value: "" });
-				})
-				.catch((error) => console.log(error))
-				.finally(() => setLoading(false));
+			toast.promise(signup(state.email, state.password), {
+				loading: "Loading",
+				success: () => {
+					setTimeout(() => null, 1000);
+					return "Welcome";
+				},
+				error: (error) => {
+					if (error instanceof FirebaseError) {
+						setLoading(false);
+						return (error as FirebaseError).code;
+					}
+					return "Unknown error";
+				},
+			});
+			setLoading(false);
+			navigate("/");
 		} else {
 			toast.error("Passwords don't match");
 		}
@@ -60,7 +59,7 @@ export default function UpdateProfile() {
 
 	return (
 		<div className="w-full h-screen flex flex-col gap-y-4 justify-center items-center">
-			<div className="flex flex-col gap-y-2 max-w-xs p-4 rounded-xl bg-slate-200">
+			<div className="flex flex-col gap-y-2 w-full max-w-xs p-4 rounded-xl bg-slate-200">
 				<div>
 					<Label>Email</Label>
 					<Input
@@ -74,7 +73,6 @@ export default function UpdateProfile() {
 					<Label>Password</Label>
 					<Input
 						type="password"
-						placeholder="Leave blank to keep the same password"
 						value={state.password}
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 							dispatch({ type: "password", value: e.target.value })
@@ -85,7 +83,6 @@ export default function UpdateProfile() {
 					<Label>Confirm Password</Label>
 					<Input
 						type="password"
-						placeholder="Leave blank to keep the same password"
 						value={state.confirmPassword}
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 							dispatch({ type: "confirmPassword", value: e.target.value })
@@ -93,11 +90,14 @@ export default function UpdateProfile() {
 					/>
 				</div>
 				<Button onClick={handleSubmit} disabled={loading}>
-					Update Profile
+					Sign Up
 				</Button>
 			</div>
 			<div className="flex flex-col items-center">
-				<Link to="/">Cancel</Link>
+				<div>Already have an account ?</div>
+				<Link to="/login" className="font-semibold text-green-500">
+					Login
+				</Link>
 			</div>
 		</div>
 	);
