@@ -1,8 +1,11 @@
-import { User } from "firebase/auth";
-import { Button } from "../components/Basic";
-import { useAuth } from "../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { User } from "firebase/auth";
+import toast from "react-hot-toast";
+import { FirebaseError } from "firebase/app";
+import { useNavigate } from "react-router-dom";
+
+import { useAuth } from "../contexts";
+import { Button } from "../components";
 
 export default function Dashboard() {
 	const { logout, currentUser } = useAuth() as {
@@ -15,8 +18,9 @@ export default function Dashboard() {
 		try {
 			await logout();
 			navigate("/login");
-		} catch (err) {
-			console.log(err);
+		} catch (error) {
+			if (error instanceof FirebaseError)
+				toast.error((error as FirebaseError).code);
 		}
 	}
 

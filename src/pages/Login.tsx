@@ -1,8 +1,11 @@
 import { useReducer, useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import { Input, Label } from "../components/Basic";
 import { Link, useNavigate } from "react-router-dom";
 import { UserCredential } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
+import toast from "react-hot-toast";
+
+import { useAuth } from "../contexts";
+import { Input, Label } from "../components";
 
 function reducer(
 	state: { email: string; password: string },
@@ -34,8 +37,11 @@ export default function Login() {
 			setLoading(true);
 			await login(state.email, state.password);
 			navigate("/");
-		} catch (err) {
-			console.log(err);
+		} catch (error) {
+			if (error instanceof FirebaseError) {
+				toast.error((error as FirebaseError).code);
+				setLoading(false);
+			}
 		}
 	}
 

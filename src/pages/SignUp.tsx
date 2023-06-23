@@ -1,8 +1,11 @@
 import { useReducer, useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import { Button, Input, Label } from "../components/Basic";
 import { Link, useNavigate } from "react-router-dom";
 import { UserCredential } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
+import toast from "react-hot-toast";
+
+import { useAuth } from "../contexts";
+import { Button, Input, Label } from "../components";
 
 function reducer(
 	state: { email: string; password: string; confirmPassword: string },
@@ -36,11 +39,14 @@ export default function SignUp() {
 				setLoading(true);
 				await signup(state.email, state.password);
 				navigate("/");
-			} catch (err) {
-				console.log(err);
+			} catch (error) {
+				if (error instanceof FirebaseError) {
+					toast.error((error as FirebaseError).code);
+					setLoading(false);
+				}
 			}
 		} else {
-			console.log("Passwords don't match");
+			toast.error("Passwords don't match");
 		}
 	}
 
@@ -74,10 +80,7 @@ export default function SignUp() {
 						}
 					/>
 				</div>
-				<Button
-					onClick={handleSubmit}
-					disabled={loading}
-				>
+				<Button onClick={handleSubmit} disabled={loading}>
 					Sign Up
 				</Button>
 			</div>

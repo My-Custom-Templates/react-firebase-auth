@@ -3,10 +3,12 @@ import { AuthProvider } from "./contexts/AuthContext";
 import SignUp from "./pages/SignUp";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
+import { Toaster } from "react-hot-toast";
 
 export default function App() {
 	return (
 		<div className="min-h-screen w-screen">
+			<Toaster />
 			<Router>
 				<AuthProvider>
 					<Routes>
