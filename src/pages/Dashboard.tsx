@@ -4,7 +4,6 @@ import { FirebaseError } from "firebase/app";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../contexts";
-import { Button } from "../components";
 
 export default function Dashboard() {
 	const { logout, currentUser } = useAuth() as {
