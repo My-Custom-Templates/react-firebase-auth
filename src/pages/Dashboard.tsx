@@ -1,8 +1,7 @@
-import { useEffect } from "react";
 import { User } from "firebase/auth";
 import toast from "react-hot-toast";
 import { FirebaseError } from "firebase/app";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../contexts";
 import { Button } from "../components";
@@ -24,15 +23,18 @@ export default function Dashboard() {
 		}
 	}
 
-	useEffect(() => {
-		if (!currentUser) {
-			navigate("/login");
-		}
-	});
-
 	return (
-		<div>
-			<div>{currentUser?.email}</div>
+		<div className="flex flex-col w-max gap-y-2">
+			<div>
+				You are logged in as
+				<br /> {currentUser?.email}
+			</div>
+			<Link
+				to="/update-profile"
+				className="bg-blue-400 py-2 px-2 rounded-md mt-2 text-white text-center"
+			>
+				Update Profile
+			</Link>
 			<Button onClick={handleLogout}>Logout</Button>
 		</div>
 	);

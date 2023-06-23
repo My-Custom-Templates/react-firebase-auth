@@ -7,6 +7,9 @@ import {
 	signInWithEmailAndPassword,
 	onAuthStateChanged,
 	signOut,
+	sendPasswordResetEmail,
+	updateEmail,
+	updatePassword,
 } from "firebase/auth";
 
 interface Auth {
@@ -14,11 +17,15 @@ interface Auth {
 	signup: (email: string, password: string) => Promise<UserCredential>;
 	login: (email: string, password: string) => Promise<UserCredential>;
 	logout: () => Promise<void>;
+	resetPassword: (email: string) => Promise<void>;
+	updateUserEmail: (email: string) => Promise<void> | undefined;
+	updateUserPassword: (email: string) => Promise<void> | undefined;
 }
 
 // const AuthContext = createContext();
 const AuthContext = createContext<Auth | null>(null);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
 	return useContext(AuthContext);
 }
@@ -39,6 +46,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		return signOut(auth);
 	}
 
+	function resetPassword(email: string) {
+		return sendPasswordResetEmail(auth, email);
+	}
+
+	function updateUserEmail(email: string) {
+		if (currentUser) {
+			return updateEmail(currentUser, email);
+		}
+		return;
+	}
+
+	function updateUserPassword(password: string) {
+		if (currentUser) {
+			return updatePassword(currentUser, password);
+		}
+		return;
+	}
+
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
 			setCurrentUser(user);
@@ -47,7 +72,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		return unsubscribe;
 	}, []);
 
-	const value: Auth = { currentUser, signup, login, logout };
+	const value: Auth = {
+		currentUser,
+		signup,
+		login,
+		logout,
+		resetPassword,
+		updateUserEmail,
+		updateUserPassword,
+	};
 
 	return (
 		<AuthContext.Provider value={value}>

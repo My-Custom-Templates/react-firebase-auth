@@ -1,6 +1,5 @@
 import { useReducer, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { UserCredential } from "firebase/auth";
+import { Link } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
 import toast from "react-hot-toast";
 
@@ -8,10 +7,10 @@ import { useAuth } from "../contexts";
 import { Input, Label } from "../components";
 
 function reducer(
-	state: { email: string; password: string },
+	state: { email: string },
 	action: { type: string; value: string }
 ) {
-	if (["email", "password"].includes(action.type)) {
+	if (["email"].includes(action.type)) {
 		return {
 			...state,
 			[action.type]: action.value,
@@ -21,22 +20,20 @@ function reducer(
 	}
 }
 
-export default function Login() {
+export default function ForgotPassword() {
 	const [state, dispatch] = useReducer(reducer, {
 		email: "",
-		password: "",
 	});
-	const { login } = useAuth() as {
-		login: (email: string, password: string) => Promise<UserCredential>;
+	const { resetPassword } = useAuth() as {
+		resetPassword: (email: string) => Promise<void>;
 	};
 	const [loading, setLoading] = useState(false);
-	const navigate = useNavigate();
 
 	async function handleSubmit() {
 		try {
 			setLoading(true);
-			await login(state.email, state.password);
-			navigate("/");
+			await resetPassword(state.email);
+			toast.success("Check your inbox");
 		} catch (error) {
 			if (error instanceof FirebaseError) {
 				toast.error((error as FirebaseError).code);
@@ -57,26 +54,17 @@ export default function Login() {
 						}
 					/>
 				</div>
-				<div>
-					<Label>Password</Label>
-					<Input
-						type="password"
-						value={state.password}
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-							dispatch({ type: "password", value: e.target.value })
-						}
-					/>
-				</div>
 				<button
 					className="bg-blue-400 py-2 px-2 rounded-md mt-2 text-white"
 					onClick={handleSubmit}
 					disabled={loading}
 				>
-					Login
+					Reset Your Password
 				</button>
 			</div>
 			<div className="flex flex-col items-center">
-				<Link to="/forgot-password">Forgot your password ?</Link>
+				<div>Got your password ?</div>
+				<Link to="/login">Login</Link>
 			</div>
 			<div className="flex flex-col items-center">
 				<div>Need an account ?</div>
