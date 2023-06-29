@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 
 import { useAuth } from "../../contexts";
 import { Input, Label } from "../../components";
+import { GithubIcon, GoogleIcon } from "../../global/Icons";
 
 function reducer(
 	state: { email: string; password: string },
@@ -26,13 +27,15 @@ export default function Login() {
 		email: "",
 		password: "",
 	});
-	const { login } = useAuth() as {
+	const { login, githubLogin, googleLogin } = useAuth() as {
 		login: (email: string, password: string) => Promise<UserCredential>;
+    githubLogin: () => Promise<UserCredential>;
+    googleLogin: () => Promise<UserCredential>;
 	};
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
 
-	function handleSubmit() {
+	function normalSignin() {
 		setLoading(true);
 		toast.promise(login(state.email, state.password), {
 			loading: "Loading",
@@ -51,6 +54,46 @@ export default function Login() {
 		setLoading(false);
 		navigate("/");
 	}
+
+  function githubSignin(){
+    setLoading(true);
+		toast.promise(githubLogin(), {
+			loading: "Loading",
+			success: () => {
+				setTimeout(() => null, 1000);
+				return "Logged in";
+			},
+			error: (error) => {
+				if (error instanceof FirebaseError) {
+					setLoading(false);
+					return (error as FirebaseError).code;
+				}
+				return "Unknown error";
+			},
+		});
+		setLoading(false);
+		navigate("/");
+  }
+
+  function googleSignin(){
+    setLoading(true);
+		toast.promise(googleLogin(), {
+			loading: "Loading",
+			success: () => {
+				setTimeout(() => null, 1000);
+				return "Logged in";
+			},
+			error: (error) => {
+				if (error instanceof FirebaseError) {
+					setLoading(false);
+					return (error as FirebaseError).code;
+				}
+				return "Unknown error";
+			},
+		});
+		setLoading(false);
+		navigate("/");
+  }
 
 	return (
 		<div className="w-full h-screen flex flex-col gap-y-6 justify-center items-center">
@@ -76,12 +119,16 @@ export default function Login() {
 				</div>
 				<button
 					className="bg-blue-400 py-2 px-2 rounded-md mt-2 text-white"
-					onClick={handleSubmit}
+					onClick={normalSignin}
 					disabled={loading}
 				>
 					Login
 				</button>
 			</div>
+      <div className="flex gap-x-4">
+        <button onClick={googleSignin} className="h-8 w-8"><GoogleIcon /></button>
+        <button onClick={githubSignin} className="h-8 w-8"><GithubIcon /></button>
+      </div>
 			<div className="flex flex-col items-center text-red-500 font-semibold">
 				<Link to="/forgot-password">Forgot your password ?</Link>
 			</div>

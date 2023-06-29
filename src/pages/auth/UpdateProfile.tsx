@@ -22,10 +22,11 @@ function reducer(
 }
 
 export default function UpdateProfile() {
-	const { currentUser, updateUserEmail, updateUserPassword } = useAuth() as {
+	const { currentUser, updateUserEmail, updateUserPassword, getProviders } = useAuth() as {
 		currentUser: User | null | undefined;
 		updateUserEmail: (email: string) => Promise<void> | undefined;
 		updateUserPassword: (email: string) => Promise<void> | undefined;
+    getProviders: () => string[] | undefined;
 	};
 	const [state, dispatch] = useReducer(reducer, {
 		email: currentUser?.email ?? "",
@@ -68,7 +69,7 @@ export default function UpdateProfile() {
 		}
 	}
 
-	return (
+	return getProviders()?.includes("password") ? (
 		<div className="w-full h-screen flex flex-col gap-y-4 justify-center items-center">
 			<div className="flex flex-col gap-y-2 w-full max-w-xs p-4 rounded-xl bg-slate-200">
 				<div>
@@ -112,5 +113,12 @@ export default function UpdateProfile() {
 				</Link>
 			</div>
 		</div>
-	);
+	) : <div className="w-full h-screen flex flex-col justify-center items-center font-semibold">
+    <div>
+      OAuth does not support updating your profile.
+    </div>
+    <Link to="/" className="font-semibold text-red-500">
+      Go back
+    </Link>
+  </div>;
 }

@@ -10,6 +10,10 @@ import {
 	sendPasswordResetEmail,
 	updateEmail,
 	updatePassword,
+  signInWithPopup,
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  browserPopupRedirectResolver
 } from "firebase/auth";
 
 interface Auth {
@@ -20,6 +24,9 @@ interface Auth {
 	resetPassword: (email: string) => Promise<void>;
 	updateUserEmail: (email: string) => Promise<void> | undefined;
 	updateUserPassword: (email: string) => Promise<void> | undefined;
+	getProviders: () => string[] | undefined;
+	githubLogin: () => Promise<UserCredential>;
+	googleLogin: () => Promise<UserCredential>;
 }
 
 // const AuthContext = createContext();
@@ -41,6 +48,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	function login(email: string, password: string) {
 		return signInWithEmailAndPassword(auth, email, password);
 	}
+
+  function githubLogin(){
+      return signInWithPopup(auth, new GithubAuthProvider(), browserPopupRedirectResolver);
+  }
+
+  function googleLogin(){
+    return signInWithPopup(auth, new GoogleAuthProvider(), browserPopupRedirectResolver);
+}
 
 	function logout() {
 		return signOut(auth);
@@ -64,6 +79,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		return;
 	}
 
+  function getProviders(){
+    return currentUser?.providerData.map((x) => x.providerId);
+  }
+
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
 			setCurrentUser(user);
@@ -80,6 +99,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		resetPassword,
 		updateUserEmail,
 		updateUserPassword,
+    githubLogin,
+    googleLogin,
+    getProviders,
 	};
 
 	return (
