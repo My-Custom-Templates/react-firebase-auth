@@ -29,8 +29,8 @@ export default function Login() {
 	});
 	const { login, githubLogin, googleLogin } = useAuth() as {
 		login: (email: string, password: string) => Promise<UserCredential>;
-    githubLogin: () => Promise<UserCredential>;
-    googleLogin: () => Promise<UserCredential>;
+		githubLogin: () => Promise<UserCredential>;
+		googleLogin: () => Promise<UserCredential>;
 	};
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
@@ -55,8 +55,8 @@ export default function Login() {
 		navigate("/");
 	}
 
-  function githubSignin(){
-    setLoading(true);
+	function githubSignin() {
+		setLoading(true);
 		toast.promise(githubLogin(), {
 			loading: "Loading",
 			success: () => {
@@ -73,10 +73,10 @@ export default function Login() {
 		});
 		setLoading(false);
 		navigate("/");
-  }
+	}
 
-  function googleSignin(){
-    setLoading(true);
+	function googleSignin() {
+		setLoading(true);
 		toast.promise(googleLogin(), {
 			loading: "Loading",
 			success: () => {
@@ -93,7 +93,7 @@ export default function Login() {
 		});
 		setLoading(false);
 		navigate("/");
-  }
+	}
 
 	return (
 		<div className="w-full h-screen flex flex-col gap-y-6 justify-center items-center">
@@ -125,16 +125,20 @@ export default function Login() {
 					Login
 				</button>
 			</div>
-      <div className="flex gap-x-4">
-        <button onClick={googleSignin} className="h-8 w-8"><GoogleIcon /></button>
-        <button onClick={githubSignin} className="h-8 w-8"><GithubIcon /></button>
-      </div>
+			<div className="flex gap-x-4">
+				<button onClick={googleSignin} className="h-8 w-8">
+					<GoogleIcon />
+				</button>
+				<button onClick={githubSignin} className="h-8 w-8">
+					<GithubIcon />
+				</button>
+			</div>
 			<div className="flex flex-col items-center text-red-500 font-semibold">
 				<Link to="/forgot-password">Forgot your password ?</Link>
 			</div>
 			<div className="flex flex-col items-center">
 				<div>Need an account ?</div>
-				<Link to="/signup" className="text-green-500 font-semibold">
+				<Link to="/signup" className="text-blue-500 font-semibold">
 					Sign Up
 				</Link>
 			</div>

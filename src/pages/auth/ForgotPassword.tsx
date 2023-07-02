@@ -70,11 +70,15 @@ export default function ForgotPassword() {
 			</div>
 			<div className="flex flex-col items-center">
 				<div>Got your password ?</div>
-				<Link to="/login">Login</Link>
+				<Link to="/login" className="text-green-500 font-semibold">
+					Login
+				</Link>
 			</div>
 			<div className="flex flex-col items-center">
 				<div>Need an account ?</div>
-				<Link to="/signup">Sign Up</Link>
+				<Link to="/signup" className="text-blue-500 font-semibold">
+					Sign Up
+				</Link>
 			</div>
 		</div>
 	);

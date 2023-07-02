@@ -22,12 +22,13 @@ function reducer(
 }
 
 export default function UpdateProfile() {
-	const { currentUser, updateUserEmail, updateUserPassword, getProviders } = useAuth() as {
-		currentUser: User | null | undefined;
-		updateUserEmail: (email: string) => Promise<void> | undefined;
-		updateUserPassword: (email: string) => Promise<void> | undefined;
-    getProviders: () => string[] | undefined;
-	};
+	const { currentUser, updateUserEmail, updateUserPassword, getProviders } =
+		useAuth() as {
+			currentUser: User | null | undefined;
+			updateUserEmail: (email: string) => Promise<void> | undefined;
+			updateUserPassword: (email: string) => Promise<void> | undefined;
+			getProviders: () => string[] | undefined;
+		};
 	const [state, dispatch] = useReducer(reducer, {
 		email: currentUser?.email ?? "",
 		password: "",
@@ -113,12 +114,12 @@ export default function UpdateProfile() {
 				</Link>
 			</div>
 		</div>
-	) : <div className="w-full h-screen flex flex-col justify-center items-center font-semibold">
-    <div>
-      OAuth does not support updating your profile.
-    </div>
-    <Link to="/" className="font-semibold text-red-500">
-      Go back
-    </Link>
-  </div>;
+	) : (
+		<div className="w-full h-screen flex flex-col justify-center items-center font-semibold">
+			<div>OAuth does not support updating your profile.</div>
+			<Link to="/" className="font-semibold text-blue-500">
+				Go back
+			</Link>
+		</div>
+	);
 }
