@@ -11,6 +11,3 @@
    VITE_FIREBASE_APP_ID = "paste_your_firebase_project_appId_here"
    ```
 3. Run `pnpm i`, then `pnpm run dev`
-
-## Hosting
-Currently hosted [here](https://archeio.netlify.app/).
